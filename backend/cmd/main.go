@@ -5,6 +5,7 @@ import (
 
 	"github.com/Cellul4r/go-quiz-app/api/routes"
 	config "github.com/Cellul4r/go-quiz-app/pkg/config"
+	"github.com/Cellul4r/go-quiz-app/pkg/database"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -15,13 +16,21 @@ func main() {
 		log.Fatal("cannot load config: ", configErr)
 	}
 
+	db, dbErr := database.ConnectDatabase(config)
+	if dbErr != nil {
+		log.Fatal("cannot connect to database: ", dbErr)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		panic("failed to get sql.DB")
+	}
+
+	// Defer the closing of the database connection pool
+	defer sqlDB.Close()
+
 	app := fiber.New()
 	routes.Register(app)
-
-	// Example route to test the server
-	app.Get("/", func(ctx fiber.Ctx) error {
-		return ctx.SendString("Welcome it works! Hello Worlddddd!")
-	})
 
 	port := config.Port
 	if port == "" {
