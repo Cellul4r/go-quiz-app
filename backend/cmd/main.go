@@ -2,16 +2,17 @@ package main
 
 import (
 	"log"
-	"os"
 
 	"github.com/Cellul4r/go-quiz-app/api/routes"
+	config "github.com/Cellul4r/go-quiz-app/pkg/config"
 	"github.com/gofiber/fiber/v3"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found, falling back to environment variables")
+	// Load environment variables from .env file
+	config, configErr := config.LoadConfig()
+	if configErr != nil {
+		log.Fatal("cannot load config: ", configErr)
 	}
 
 	app := fiber.New()
@@ -22,7 +23,7 @@ func main() {
 		return ctx.SendString("Welcome it works! Hello Worlddddd!")
 	})
 
-	port := os.Getenv("PORT")
+	port := config.Port
 	if port == "" {
 		port = "3000"
 	}
