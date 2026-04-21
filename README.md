@@ -6,4 +6,4 @@ GoQuiz is a dynamic, community-driven learning platform featuring interactive so
 
 Here is the database schema for Phase 1:
 
-![GoQuiz Database Schema](./docs/images/db-schema.png)
+![GoQuiz Database Schema](./docs/images/GoQuiz%20DB%20diagram.png)
