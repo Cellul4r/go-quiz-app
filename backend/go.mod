@@ -1,4 +1,4 @@
-module github.com/Cellul4r/go-quiz-app
+module github.com/Cellul4r/go-quiz-app/backend
 
 go 1.26.1
 
