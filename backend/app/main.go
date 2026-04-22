@@ -3,10 +3,13 @@ package main
 import (
 	"log"
 
-	"github.com/Cellul4r/go-quiz-app/backend/api/routes"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/database"
+	postgresRepo "github.com/Cellul4r/go-quiz-app/backend/internal/repository/postgres"
+	"github.com/Cellul4r/go-quiz-app/backend/internal/rest"
+	"github.com/Cellul4r/go-quiz-app/backend/profile"
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/middleware/logger"
 )
 
 func main() {
@@ -30,7 +33,17 @@ func main() {
 	defer sqlDB.Close()
 
 	app := fiber.New()
-	routes.Register(app)
+	if config.AppEnv == "development" {
+		log.Println("Running in development mode")
+		app.Use(logger.New())
+	}
+
+	// Prepare repositories
+	profileRepo := postgresRepo.NewProfileRepository(db)
+
+	// BUild services layer
+	profileService := profile.NewService(profileRepo)
+	rest.NewProfileHandler(app, profileService)
 
 	port := config.Port
 	if port == "" {
