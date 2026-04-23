@@ -5,7 +5,7 @@ begin
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'username', ''),
-    coalesce(new.raw_user_meta_data->>'full_name', '')
+    coalesce(new.raw_user_meta_data->>'full_name', ''),
     coalesce(new.raw_user_meta_data->>'avatar_url', '')
   );
   return new;
