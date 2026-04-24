@@ -1,4 +1,3 @@
-basePath: /api/v1
 definitions:
   dto.ProfileResponse:
     properties:
@@ -29,17 +28,17 @@ definitions:
     type: object
   rest.ResponseError:
     properties:
+      code:
+        type: string
+      fields:
+        additionalProperties:
+          type: string
+        type: object
       message:
         type: string
     type: object
 info:
   contact: {}
-  description: API for Go Quiz, a dynamic community-driven learning platform
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-  title: Go Quiz App API
-  version: "1.0"
 paths:
   /profiles/{id}:
     get:
@@ -106,14 +105,8 @@ paths:
           schema:
             $ref: '#/definitions/rest.ResponseError'
       security:
-      - Bearer: []
+      - BearerAuth: []
       summary: Update my profile
       tags:
       - profiles
-securityDefinitions:
-  BearerAuth:
-    description: 'Enter JWT token with Bearer prefix. Example: Bearer {token}'
-    in: header
-    name: Authorization
-    type: apiKey
 swagger: "2.0"

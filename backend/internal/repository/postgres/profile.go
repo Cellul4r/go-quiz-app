@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"strings"
 
 	"github.com/Cellul4r/go-quiz-app/backend/domain"
 	"github.com/google/uuid"
@@ -24,6 +25,16 @@ func NewProfileRepository(db *gorm.DB, logger *slog.Logger) *ProfileRepository {
 }
 
 func (m *ProfileRepository) GetByID(ctx context.Context, profileID uuid.UUID) (domain.Profile, error) {
+	if profileID == uuid.Nil {
+		return domain.Profile{}, &domain.AppError{
+			Code:    "validation_failed",
+			Message: "validation failed",
+			Fields: map[string]string{
+				"id": "must be a valid UUID",
+			},
+		}
+	}
+
 	m.logger.Debug("profile repository get by id query", "profile_id", profileID.String())
 	var profile domain.Profile
 	if result := m.db.WithContext(ctx).First(&profile, "id = ?", profileID); result.Error != nil {
@@ -38,6 +49,16 @@ func (m *ProfileRepository) GetByID(ctx context.Context, profileID uuid.UUID) (d
 }
 
 func (m *ProfileRepository) GetByUsername(ctx context.Context, username string) (domain.Profile, error) {
+	if strings.TrimSpace(username) == "" {
+		return domain.Profile{}, &domain.AppError{
+			Code:    "validation_failed",
+			Message: "validation failed",
+			Fields: map[string]string{
+				"username": "is required",
+			},
+		}
+	}
+
 	m.logger.Debug("profile repository get by username query", "username", username)
 	var profile domain.Profile
 	if result := m.db.WithContext(ctx).First(&profile, "username = ?", username); result.Error != nil {
@@ -52,6 +73,26 @@ func (m *ProfileRepository) GetByUsername(ctx context.Context, username string) 
 }
 
 func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error) {
+	if profile == nil {
+		return domain.Profile{}, &domain.AppError{
+			Code:    "validation_failed",
+			Message: "validation failed",
+			Fields: map[string]string{
+				"request": "payload is required",
+			},
+		}
+	}
+
+	if profile.ID == uuid.Nil {
+		return domain.Profile{}, &domain.AppError{
+			Code:    "validation_failed",
+			Message: "validation failed",
+			Fields: map[string]string{
+				"id": "must be a valid UUID",
+			},
+		}
+	}
+
 	m.logger.Debug("profile repository update query", "profile_id", profile.ID.String(), "username", profile.Username)
 	result := m.db.WithContext(ctx).
 		Model(&profile).

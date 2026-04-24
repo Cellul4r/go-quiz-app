@@ -8,12 +8,31 @@ import (
 
 // ResponseError represent the response error struct
 type ResponseError struct {
-	Message string `json:"message"`
+	Code    string            `json:"code"`
+	Message string            `json:"message"`
+	Fields  map[string]string `json:"fields,omitempty"`
 }
 
 func getStatusCode(err error) int {
 	if err == nil {
 		return http.StatusOK
+	}
+
+	if appErr, ok := domain.AsAppError(err); ok {
+		switch appErr.Code {
+		case "internal_server_error":
+			return http.StatusInternalServerError
+		case "not_found":
+			return http.StatusNotFound
+		case "conflict", "username_conflict":
+			return http.StatusConflict
+		case "unauthorized":
+			return http.StatusUnauthorized
+		case "bad_request", "validation_failed":
+			return http.StatusBadRequest
+		default:
+			return http.StatusInternalServerError
+		}
 	}
 
 	switch err {
@@ -29,5 +48,20 @@ func getStatusCode(err error) int {
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
+	}
+}
+
+func toResponseError(err error) ResponseError {
+	if appErr, ok := domain.AsAppError(err); ok {
+		return ResponseError{
+			Code:    appErr.Code,
+			Message: appErr.Message,
+			Fields:  appErr.Fields,
+		}
+	}
+
+	return ResponseError{
+		Code:    domain.ErrInternalServerError.Code,
+		Message: domain.ErrInternalServerError.Message,
 	}
 }

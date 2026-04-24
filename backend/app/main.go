@@ -30,7 +30,9 @@ func main() {
 	// Defer the closing of the database connection pool
 	defer sqlDB.Close()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		StructValidator: newStructValidator(),
+	})
 	configureFiberLog(config)
 	configureDevelopmentMiddleware(app, config)
 	appLogger := newAppLogger(config)

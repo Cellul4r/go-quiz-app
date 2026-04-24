@@ -1,22 +1,14 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for Go Quiz, a dynamic community-driven learning platform",
-        "title": "Go Quiz App API",
-        "contact": {},
-        "license": {
-            "name": "Apache 2.0",
-            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
-        },
-        "version": "1.0"
+        "contact": {}
     },
-    "basePath": "/api/v1",
     "paths": {
         "/profiles/me": {
             "put": {
                 "security": [
                     {
-                        "Bearer": []
+                        "BearerAuth": []
                     }
                 ],
                 "description": "Update the current user's profile information (requires authentication)",
@@ -164,18 +156,19 @@
         "rest.ResponseError": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "fields": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "message": {
                     "type": "string"
                 }
             }
-        }
-    },
-    "securityDefinitions": {
-        "BearerAuth": {
-            "description": "Enter JWT token with Bearer prefix. Example: Bearer {token}",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
         }
     }
 }
