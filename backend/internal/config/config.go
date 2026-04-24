@@ -5,14 +5,16 @@ import (
 )
 
 type Config struct {
-	AppEnv     string `mapstructure:"APP_ENV"`
-	AppDebug   bool   `mapstructure:"APP_DEBUG"`
-	Port       string `mapstructure:"PORT"`
-	DBHost     string `mapstructure:"DB_HOST"`
-	DBPort     string `mapstructure:"DB_PORT"`
-	DBName     string `mapstructure:"DB_NAME"`
-	DBUser     string `mapstructure:"DB_USER"`
-	DBPassword string `mapstructure:"DB_PASSWORD"`
+	AppEnv            string `mapstructure:"APP_ENV"`
+	AppDebug          bool   `mapstructure:"APP_DEBUG"`
+	Port              string `mapstructure:"PORT"`
+	DBHost            string `mapstructure:"DB_HOST"`
+	DBPort            string `mapstructure:"DB_PORT"`
+	DBName            string `mapstructure:"DB_NAME"`
+	DBUser            string `mapstructure:"DB_USER"`
+	DBPassword        string `mapstructure:"DB_PASSWORD"`
+	SupabaseURL       string `mapstructure:"SUPABASE_URL"`
+	SupabaseJWTSecret string `mapstructure:"SUPABASE_JWT_SECRET"`
 }
 
 var envs = []string{
@@ -24,6 +26,8 @@ var envs = []string{
 	"DB_NAME",
 	"DB_USER",
 	"DB_PASSWORD",
+	"SUPABASE_URL",
+	"SUPABASE_JWT_SECRET",
 }
 
 func LoadConfig() (Config, error) {

@@ -33,7 +33,7 @@ func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) error
 	// validation
 	existing, err := s.profileRepo.GetByUsername(ctx, profile.Username)
 	if err == nil && existing.ID != profile.ID {
-		return domain.ErrConflict
+		return domain.ErrUserNameConflict
 	}
 
 	return s.profileRepo.UpdateByID(ctx, profile)
