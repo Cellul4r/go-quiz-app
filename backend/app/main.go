@@ -1,44 +1,16 @@
 package main
 
-// Swagger metadata consumed by swag tooling to generate the API document.
-// @title Go Quiz App API
-// @version 1.0
-// @description 	API for Go Quiz, a dynamic community-driven learning platform
-//
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-//
-// @BasePath /api/v1
-//
-// @securityDefinitions.apikey BearerAuth
-// @in header
-// @name Authorization
-// @description Enter JWT token with Bearer prefix. Example: Bearer {token}
 import (
 	"log"
-	"os"
 
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/database"
 	postgresRepo "github.com/Cellul4r/go-quiz-app/backend/internal/repository/postgres"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest"
 	"github.com/Cellul4r/go-quiz-app/backend/profile"
-	swagger "github.com/gofiber/contrib/v3/swaggerui"
 	"github.com/gofiber/fiber/v3"
 	fiberlog "github.com/gofiber/fiber/v3/log"
-	"github.com/gofiber/fiber/v3/middleware/logger"
 )
-
-func configureFiberLog(cfg config.Config) {
-	fiberlog.SetOutput(os.Stdout)
-
-	if cfg.AppEnv == "development" || cfg.AppDebug {
-		fiberlog.SetLevel(fiberlog.LevelDebug)
-		return
-	}
-
-	fiberlog.SetLevel(fiberlog.LevelInfo)
-}
 
 func main() {
 	// Load environment variables from .env file
@@ -62,23 +34,16 @@ func main() {
 
 	app := fiber.New()
 	configureFiberLog(config)
-	if config.AppEnv == "development" {
-		log.Println("Running in development mode")
-		app.Use(logger.New())
-		app.Use(swagger.New(swagger.Config{
-			BasePath: "/api/v1",
-			FilePath: "./swagger_doc/swagger.json",
-			Path:     "/docs",
-		}))
-	}
+	configureDevelopmentMiddleware(app, config)
+	appLogger := newAppLogger(config)
 
 	api := app.Group("/api/v1")
 
 	// Prepare repositories
-	profileRepo := postgresRepo.NewProfileRepository(db)
+	profileRepo := postgresRepo.NewProfileRepository(db, appLogger.With("layer", "repository", "component", "profile"))
 
 	// BUild services layer
-	profileService := profile.NewService(profileRepo)
+	profileService := profile.NewService(profileRepo, appLogger.With("layer", "service", "component", "profile"))
 	rest.NewProfileHandler(api, &config, profileService)
 	fiberlog.Info("Server is running on port " + config.Port)
 	port := config.Port

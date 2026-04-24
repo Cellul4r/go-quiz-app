@@ -10,6 +10,7 @@ import (
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
+	fiberlog "github.com/gofiber/fiber/v3/log"
 	"github.com/google/uuid"
 )
 
@@ -87,11 +88,13 @@ func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 	// Parse the request body into a Profile struct
 	var profile dto.ProfileUpdateRequest
 	if err := c.Bind().JSON(&profile); err != nil {
+		fiberlog.Error("Failed to bind profile update request: ", err)
 		return c.Status(fiber.StatusBadRequest).JSON(ResponseError{Message: domain.ErrBadParamInput.Error()})
 	}
 
 	// Validate the profile Data
 	if valid, err := isProfileValid(&profile); !valid {
+		fiberlog.Error("Profile validation failed: ", err)
 		return c.Status(fiber.StatusBadRequest).JSON(ResponseError{Message: err.Error()})
 	}
 
