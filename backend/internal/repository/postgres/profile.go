@@ -34,7 +34,6 @@ func (m *ProfileRepository) GetByID(ctx context.Context, profileID uuid.UUID) (d
 		m.logger.Error("profile repository get by id failed", "profile_id", profileID.String(), "error", result.Error)
 		return domain.Profile{}, domain.ErrInternalServerError
 	}
-	m.logger.Debug("profile repository get by id success", "profile_id", profileID.String())
 	return profile, nil
 }
 
@@ -49,7 +48,6 @@ func (m *ProfileRepository) GetByUsername(ctx context.Context, username string) 
 		m.logger.Error("profile repository get by username failed", "username", username, "error", result.Error)
 		return domain.Profile{}, domain.ErrInternalServerError
 	}
-	m.logger.Debug("profile repository get by username success", "username", username)
 	return profile, nil
 }
 
@@ -78,6 +76,5 @@ func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Prof
 		m.logger.Error("profile repository update fetch updated failed", "profile_id", profile.ID.String(), "error", err)
 		return domain.Profile{}, err
 	}
-	m.logger.Debug("profile repository update success", "profile_id", profile.ID.String())
 	return updated, nil
 }

@@ -107,7 +107,7 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 
 # or without docker
 cd backend
-go run ./app/main.go
+go run ./app
 ```
 
 ### 6. Verify everything is running

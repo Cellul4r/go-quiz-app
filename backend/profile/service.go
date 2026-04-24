@@ -34,7 +34,6 @@ func (s *Service) GetByID(ctx context.Context, profileID uuid.UUID) (domain.Prof
 		s.logger.Error("profile service get by id failed", "profile_id", profileID.String(), "error", err)
 		return domain.Profile{}, err
 	}
-	s.logger.Debug("profile service get by id success", "profile_id", profileID.String())
 	return profile, nil
 }
 
@@ -53,6 +52,5 @@ func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) (doma
 		return domain.Profile{}, updateErr
 	}
 
-	s.logger.Debug("profile service update success", "profile_id", profile.ID.String())
 	return updated, nil
 }

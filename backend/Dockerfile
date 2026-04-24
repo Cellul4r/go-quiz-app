@@ -8,7 +8,7 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o main ./app/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./app
 
 # Stage 2 — final image
 FROM alpine:3.21

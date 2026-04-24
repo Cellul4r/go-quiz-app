@@ -3,11 +3,9 @@ package main
 import (
 	"log"
 
+	"github.com/Cellul4r/go-quiz-app/backend/app/modules"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/database"
-	postgresRepo "github.com/Cellul4r/go-quiz-app/backend/internal/repository/postgres"
-	"github.com/Cellul4r/go-quiz-app/backend/internal/rest"
-	"github.com/Cellul4r/go-quiz-app/backend/profile"
 	"github.com/gofiber/fiber/v3"
 	fiberlog "github.com/gofiber/fiber/v3/log"
 )
@@ -39,12 +37,9 @@ func main() {
 
 	api := app.Group("/api/v1")
 
-	// Prepare repositories
-	profileRepo := postgresRepo.NewProfileRepository(db, appLogger.With("layer", "repository", "component", "profile"))
+	// Register modules
+	modules.RegisterProfileModule(db, appLogger, api, config)
 
-	// BUild services layer
-	profileService := profile.NewService(profileRepo, appLogger.With("layer", "service", "component", "profile"))
-	rest.NewProfileHandler(api, &config, profileService)
 	fiberlog.Info("Server is running on port " + config.Port)
 	port := config.Port
 	if port == "" {
