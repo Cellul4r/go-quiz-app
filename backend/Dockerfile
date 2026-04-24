@@ -16,6 +16,7 @@ FROM alpine:3.21
 WORKDIR /app
 
 COPY --from=builder /app/main .
+COPY --from=builder /app/swagger_doc ./swagger_doc
 
 EXPOSE 3000
 

@@ -1,21 +1,19 @@
 package main
 
-// @title GoQuiz API
+// Swagger metadata consumed by swag tooling to generate the API document.
+// @title Go Quiz App API
 // @version 1.0
-// @description Go Quiz - A dynamic, community-driven learning platform
-// @termsOfService http://swagger.io/terms/
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@example.com
+// @description 	API for Go Quiz, a dynamic community-driven learning platform
+//
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:3000
+//
 // @BasePath /api/v1
-// @schemes http https
-// @securityDefinitions.apikey Bearer
+//
+// @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
-// @description "Type 'Bearer TOKEN' to correctly set the API Key"
+// @description Enter JWT token with Bearer prefix. Example: Bearer {token}
 import (
 	"log"
 	"os"
@@ -25,6 +23,7 @@ import (
 	postgresRepo "github.com/Cellul4r/go-quiz-app/backend/internal/repository/postgres"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest"
 	"github.com/Cellul4r/go-quiz-app/backend/profile"
+	swagger "github.com/gofiber/contrib/v3/swaggerui"
 	"github.com/gofiber/fiber/v3"
 	fiberlog "github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -66,6 +65,11 @@ func main() {
 	if config.AppEnv == "development" {
 		log.Println("Running in development mode")
 		app.Use(logger.New())
+		app.Use(swagger.New(swagger.Config{
+			BasePath: "/api/v1",
+			FilePath: "./swagger_doc/swagger.json",
+			Path:     "/docs",
+		}))
 	}
 
 	api := app.Group("/api/v1")

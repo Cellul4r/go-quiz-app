@@ -1,0 +1,119 @@
+basePath: /api/v1
+definitions:
+  dto.ProfileResponse:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  dto.ProfileUpdateRequest:
+    properties:
+      avatar_url:
+        type: string
+      full_name:
+        maxLength: 100
+        type: string
+      username:
+        maxLength: 20
+        minLength: 1
+        type: string
+    type: object
+  rest.ResponseError:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API for Go Quiz, a dynamic community-driven learning platform
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Go Quiz App API
+  version: "1.0"
+paths:
+  /profiles/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a user profile by their UUID
+      parameters:
+      - description: Profile ID (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProfileResponse'
+        "400":
+          description: Invalid profile ID
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "404":
+          description: Profile not found
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      summary: Get profile by ID
+      tags:
+      - profiles
+  /profiles/me:
+    put:
+      consumes:
+      - application/json
+      description: Update the current user's profile information (requires authentication)
+      parameters:
+      - description: Update profile request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.ProfileUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.ProfileResponse'
+        "400":
+          description: Invalid request or validation error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/rest.ResponseError'
+      security:
+      - Bearer: []
+      summary: Update my profile
+      tags:
+      - profiles
+securityDefinitions:
+  BearerAuth:
+    description: 'Enter JWT token with Bearer prefix. Example: Bearer {token}'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
