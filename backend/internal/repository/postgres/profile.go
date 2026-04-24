@@ -39,9 +39,9 @@ func (m *ProfileRepository) GetByUsername(ctx context.Context, username string) 
 	return profile, nil
 }
 
-func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Profile) error {
+func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error) {
 	result := m.db.WithContext(ctx).
-		Model(&domain.Profile{}).
+		Model(&profile).
 		Where("id = ?", profile.ID).
 		Updates(map[string]interface{}{
 			"username":   profile.Username,
@@ -50,10 +50,15 @@ func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Prof
 		})
 
 	if result.Error != nil {
-		return domain.ErrInternalServerError
+		return domain.Profile{}, domain.ErrInternalServerError
 	}
 	if result.RowsAffected == 0 {
-		return domain.ErrNotFound
+		return domain.Profile{}, domain.ErrNotFound
 	}
-	return nil
+
+	updated, err := m.GetByID(ctx, profile.ID)
+	if err != nil {
+		return domain.Profile{}, err
+	}
+	return updated, nil
 }

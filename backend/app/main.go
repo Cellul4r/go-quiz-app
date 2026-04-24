@@ -1,5 +1,21 @@
 package main
 
+// @title GoQuiz API
+// @version 1.0
+// @description Go Quiz - A dynamic, community-driven learning platform
+// @termsOfService http://swagger.io/terms/
+// @contact.name API Support
+// @contact.url http://www.swagger.io/support
+// @contact.email support@example.com
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:3000
+// @BasePath /api/v1
+// @schemes http https
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description "Type 'Bearer TOKEN' to correctly set the API Key"
 import (
 	"log"
 	"os"
@@ -52,12 +68,14 @@ func main() {
 		app.Use(logger.New())
 	}
 
+	api := app.Group("/api/v1")
+
 	// Prepare repositories
 	profileRepo := postgresRepo.NewProfileRepository(db)
 
 	// BUild services layer
 	profileService := profile.NewService(profileRepo)
-	rest.NewProfileHandler(app, &config, profileService)
+	rest.NewProfileHandler(api, &config, profileService)
 	fiberlog.Info("Server is running on port " + config.Port)
 	port := config.Port
 	if port == "" {

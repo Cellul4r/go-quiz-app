@@ -6,6 +6,7 @@ import (
 
 	"github.com/Cellul4r/go-quiz-app/backend/domain"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
+	"github.com/Cellul4r/go-quiz-app/backend/internal/rest/dto"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest/middleware"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
@@ -16,27 +17,39 @@ var validate = validator.New()
 
 type ProfileService interface {
 	GetByID(ctx context.Context, profileID uuid.UUID) (domain.Profile, error)
-	UpdateByID(ctx context.Context, profile *domain.Profile) error
+	UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error)
 }
 
 type ProfileHandler struct {
 	Service ProfileService
 }
 
-func NewProfileHandler(app *fiber.App, cfg *config.Config, svc ProfileService) {
+func NewProfileHandler(api fiber.Router, cfg *config.Config, svc ProfileService) {
 	handler := &ProfileHandler{
 		Service: svc,
 	}
 
-	api := app.Group("/api/v1/profiles")
+	groupProfile := api.Group("/profiles")
 	// Public
-	api.Get("/:id", handler.GetByID)
+	groupProfile.Get("/:id", handler.GetByID)
 
 	// Protected
-	protected := api.Group("", middleware.Protected(cfg))
+	protected := groupProfile.Group("", middleware.Protected(cfg))
 	protected.Put("/me", handler.UpdateMe)
 }
 
+// GetByID retrieves a profile by ID
+// @Summary Get profile by ID
+// @Description Get a user profile by their UUID
+// @Tags profiles
+// @Accept json
+// @Produce json
+// @Param id path string true "Profile ID (UUID)"
+// @Success 200 {object} dto.ProfileResponse
+// @Failure 400 {object} ResponseError "Invalid profile ID"
+// @Failure 404 {object} ResponseError "Profile not found"
+// @Failure 500 {object} ResponseError "Internal server error"
+// @Router /profiles/{id} [get]
 func (h *ProfileHandler) GetByID(c fiber.Ctx) error {
 	profileID, err := uuid.Parse(c.Params("id"))
 	if err != nil {
@@ -51,15 +64,28 @@ func (h *ProfileHandler) GetByID(c fiber.Ctx) error {
 		return c.Status(getStatusCode(err)).JSON(ResponseError{Message: err.Error()})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(profile)
+	return c.Status(fiber.StatusOK).JSON(dto.ToProfileResponse(&profile))
 }
 
+// UpdateMe updates the authenticated user's profile
+// @Summary Update my profile
+// @Description Update the current user's profile information (requires authentication)
+// @Tags profiles
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param request body dto.ProfileUpdateRequest true "Update profile request"
+// @Success 200 {object} dto.ProfileResponse
+// @Failure 400 {object} ResponseError "Invalid request or validation error"
+// @Failure 401 {object} ResponseError "Unauthorized"
+// @Failure 500 {object} ResponseError "Internal server error"
+// @Router /profiles/me [put]
 func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 
 	ctx := c.Context()
 
 	// Parse the request body into a Profile struct
-	var profile domain.Profile
+	var profile dto.ProfileUpdateRequest
 	if err := c.Bind().JSON(&profile); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(ResponseError{Message: domain.ErrBadParamInput.Error()})
 	}
@@ -69,16 +95,15 @@ func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(ResponseError{Message: err.Error()})
 	}
 
-	profile.ID = getProfileID(c)
-
 	// Update the profile
-	if err := h.Service.UpdateByID(ctx, &profile); err != nil {
+	updatedProfile, err := h.Service.UpdateByID(ctx, profile.ToDomain(getProfileID(c)))
+	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ResponseError{Message: err.Error()})
 	}
-	return c.Status(fiber.StatusOK).JSON(profile)
+	return c.Status(fiber.StatusOK).JSON(dto.ToProfileResponse(&updatedProfile))
 }
 
-func isProfileValid(p *domain.Profile) (bool, error) {
+func isProfileValid(p *dto.ProfileUpdateRequest) (bool, error) {
 	err := validate.Struct(p)
 	if err != nil {
 		return false, err

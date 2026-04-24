@@ -10,7 +10,7 @@ import (
 type ProfileRepository interface {
 	GetByID(ctx context.Context, profileID uuid.UUID) (domain.Profile, error)
 	GetByUsername(ctx context.Context, username string) (domain.Profile, error)
-	UpdateByID(ctx context.Context, profile *domain.Profile) error
+	UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error)
 }
 
 type Service struct {
@@ -29,11 +29,11 @@ func (s *Service) GetByID(ctx context.Context, profileID uuid.UUID) (domain.Prof
 	return profile, nil
 }
 
-func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) error {
+func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error) {
 	// validation
 	existing, err := s.profileRepo.GetByUsername(ctx, profile.Username)
 	if err == nil && existing.ID != profile.ID {
-		return domain.ErrUserNameConflict
+		return domain.Profile{}, domain.ErrUserNameConflict
 	}
 
 	return s.profileRepo.UpdateByID(ctx, profile)
