@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v3/extractors"
 	fiberlog "github.com/gofiber/fiber/v3/log"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
 func Protected(cfg *config.Config) fiber.Handler {
@@ -39,7 +40,7 @@ func Protected(cfg *config.Config) fiber.Handler {
 			}
 
 			user := &domain.User{}
-			user.ID = sub
+			user.ID = uuid.MustParse(sub)
 
 			c.Locals("user", user)
 			return c.Next()

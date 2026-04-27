@@ -4,12 +4,27 @@ import (
 	"log"
 
 	"github.com/Cellul4r/go-quiz-app/backend/app/modules"
+	"github.com/Cellul4r/go-quiz-app/backend/domain"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/database"
 	"github.com/gofiber/fiber/v3"
 	fiberlog "github.com/gofiber/fiber/v3/log"
 )
 
+// Swagger metadata consumed by swag tooling to generate the API document.
+// @title Go Quiz App API
+// @version 1.0
+// @description API for Go Quiz, a dynamic community-driven learning platform
+//
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+//
+// @BasePath /api/v1
+//
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter JWT token with Bearer prefix. Example: Bearer {token}
 func main() {
 	// Load environment variables from .env file
 	config, configErr := config.LoadConfig()
@@ -31,7 +46,7 @@ func main() {
 	defer sqlDB.Close()
 
 	app := fiber.New(fiber.Config{
-		StructValidator: newStructValidator(),
+		StructValidator: domain.NewStructValidator(),
 	})
 	configureFiberLog(config)
 	configureDevelopmentMiddleware(app, config)

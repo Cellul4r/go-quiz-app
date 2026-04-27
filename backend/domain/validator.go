@@ -12,6 +12,6 @@ func (v *structValidator) Validate(out any) error {
 	return v.validate.Struct(out)
 }
 
-func newStructValidator() *structValidator {
+func NewStructValidator() *structValidator {
 	return &structValidator{validate: validator.New()}
 }

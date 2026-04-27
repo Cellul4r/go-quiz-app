@@ -114,6 +114,5 @@ func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 // helpers
 func getProfileID(c fiber.Ctx) uuid.UUID {
 	user := c.Locals("user").(*domain.User)
-	id, _ := uuid.Parse(user.ID)
-	return id
+	return user.ID
 }
