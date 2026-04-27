@@ -53,14 +53,17 @@ func (m *ProfileRepository) GetByUsername(ctx context.Context, username string) 
 
 func (m *ProfileRepository) UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error) {
 	m.logger.Debug("profile repository update query", "profile_id", profile.ID.String(), "profile", profile)
+	updates := map[string]interface{}{
+		"full_name":  profile.FullName,
+		"avatar_url": profile.AvatarURL,
+	}
+	if profile.Username != "" {
+		updates["username"] = profile.Username
+	}
 	result := m.db.WithContext(ctx).
 		Model(&profile).
 		Where("id = ?", profile.ID).
-		Updates(map[string]interface{}{
-			"username":   profile.Username,
-			"full_name":  profile.FullName,
-			"avatar_url": profile.AvatarURL,
-		})
+		Updates(updates)
 
 	if result.Error != nil {
 		m.logger.Error("profile repository update failed", "profile_id", profile.ID.String(), "error", result.Error)

@@ -39,16 +39,19 @@ func (s *Service) GetByID(ctx context.Context, profileID uuid.UUID) (domain.Prof
 
 func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) (domain.Profile, error) {
 	s.logger.Debug("profile service update start", "profile_id", profile.ID.String(), "username", profile.Username)
-	// validation
-	if err := profile.Validate(); err != nil {
-		s.logger.Warn("profile service update validation failed", "profile_id", profile.ID.String(), "error", err)
-		return domain.Profile{}, domain.ErrBadParamInput
+
+	existing, err := s.profileRepo.GetByID(ctx, profile.ID)
+	if err != nil {
+		s.logger.Error("profile service update get existing failed", "profile_id", profile.ID.String(), "error", err)
+		return domain.Profile{}, err
 	}
 
-	existing, err := s.profileRepo.GetByUsername(ctx, profile.Username)
-	if err == nil && existing.ID != profile.ID {
-		s.logger.Warn("profile service update username conflict", "profile_id", profile.ID.String(), "username", profile.Username)
-		return domain.Profile{}, domain.ErrUserNameConflict
+	if profile.Username != "" {
+		existing, err = s.profileRepo.GetByUsername(ctx, profile.Username)
+		if err == nil && existing.ID != profile.ID {
+			s.logger.Warn("profile service update username conflict", "profile_id", profile.ID.String(), "username", profile.Username)
+			return domain.Profile{}, domain.ErrUserNameConflict
+		}
 	}
 
 	updated, updateErr := s.profileRepo.UpdateByID(ctx, profile)
