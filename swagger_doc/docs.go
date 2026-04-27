@@ -20,7 +20,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/profiles/me": {
-            "put": {
+            "patch": {
                 "security": [
                     {
                         "BearerAuth": []

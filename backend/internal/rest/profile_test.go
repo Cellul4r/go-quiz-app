@@ -133,7 +133,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "Updated Name",
 			"avatar_url": "http://example.com/update.png"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -153,7 +153,7 @@ func TestUpdateMe(t *testing.T) {
 		svc := new(mocks.MockProfileService)
 		app := setupProfileHandler(svc)
 
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(`invalid json`))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(`invalid json`))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -174,7 +174,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "Updated Name",
 			"avatar_url": "http://example.com/update.png"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -195,7 +195,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "Updated Name",
 			"avatar_url": "http://example.com/update.png"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -215,7 +215,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "Updated Name",
 			"avatar_url": "http://example.com/update.png"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -235,7 +235,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "This is a very long full name that exceeds the allowed limit",
 			"avatar_url": "http://example.com/update.png"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 
@@ -255,7 +255,7 @@ func TestUpdateMe(t *testing.T) {
 			"full_name": "This allowed limit",
 			"avatar_url": "not-a-url"
 		}`
-		req := httptest.NewRequest(http.MethodPut, baseURL+"/me", strings.NewReader(bodySend))
+		req := httptest.NewRequest(http.MethodPatch, baseURL+"/me", strings.NewReader(bodySend))
 		req.Header.Set("Content-Type", "application/json")
 		resp, err := app.Test(req)
 

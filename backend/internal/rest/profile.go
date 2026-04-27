@@ -81,7 +81,7 @@ func (h *ProfileHandler) GetByID(c fiber.Ctx) error {
 // @Failure 400 {object} ResponseError "Invalid request or validation error"
 // @Failure 401 {object} ResponseError "Unauthorized"
 // @Failure 500 {object} ResponseError "Internal server error"
-// @Router /profiles/me [put]
+// @Router /profiles/me [patch]
 func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 
 	ctx := c.Context()

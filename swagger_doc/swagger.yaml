@@ -81,7 +81,7 @@ paths:
       tags:
       - profiles
   /profiles/me:
-    put:
+    patch:
       consumes:
       - application/json
       description: Update the current user's profile information (requires authentication)
