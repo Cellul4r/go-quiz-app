@@ -2,6 +2,7 @@ package profile
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/Cellul4r/go-quiz-app/backend/domain"
@@ -51,6 +52,9 @@ func (s *Service) UpdateByID(ctx context.Context, profile *domain.Profile) (doma
 		if err == nil && existing.ID != profile.ID {
 			s.logger.Warn("profile service update username conflict", "profile_id", profile.ID.String(), "username", profile.Username)
 			return domain.Profile{}, domain.ErrUserNameConflict
+		} else if err != nil && !errors.Is(err, domain.ErrNotFound) {
+			s.logger.Error("profile service update get by username failed", "username", profile.Username, "error", err)
+			return domain.Profile{}, domain.ErrInternalServerError
 		}
 	}
 
