@@ -8,9 +8,9 @@ import (
 )
 
 type ProfileUpdateRequest struct {
-	Username  string `json:"username,omitempty" validate:"omitempty,min=1,max=20,alphanum"`
-	FullName  string `json:"full_name" validate:"omitempty,max=100"`
-	AvatarURL string `json:"avatar_url" validate:"omitempty,url"`
+	Username  *string `json:"username,omitempty" validate:"omitempty,min=1,max=20,alphanum"`
+	FullName  string  `json:"full_name" validate:"omitempty,max=100"`
+	AvatarURL string  `json:"avatar_url" validate:"omitempty,url"`
 }
 
 type ProfileResponse struct {
@@ -23,12 +23,16 @@ type ProfileResponse struct {
 }
 
 func (r *ProfileUpdateRequest) ToDomain(id uuid.UUID) *domain.Profile {
-	return &domain.Profile{
+	profile := &domain.Profile{
 		ID:        id,
-		Username:  r.Username,
 		FullName:  r.FullName,
 		AvatarURL: r.AvatarURL,
 	}
+
+	if r.Username != nil {
+		profile.Username = *r.Username
+	}
+	return profile
 }
 
 func ToProfileResponse(p *domain.Profile) *ProfileResponse {

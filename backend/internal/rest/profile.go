@@ -33,7 +33,7 @@ func NewProfileHandler(api fiber.Router, cfg *config.Config, svc ProfileService)
 
 	// Protected
 	protected := groupProfile.Group("", middleware.Protected(cfg))
-	protected.Put("/me", handler.UpdateMe)
+	protected.Patch("/me", handler.UpdateMe)
 }
 
 // GetByID retrieves a profile by ID

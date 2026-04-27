@@ -35,7 +35,7 @@ func setupProfileHandler(svc rest.ProfileService) *fiber.App {
 		c.Locals("user", &domain.User{ID: uuid.New()})
 		return c.Next()
 	})
-	protected.Put("/me", handler.UpdateMe)
+	protected.Patch("/me", handler.UpdateMe)
 
 	return app
 }
