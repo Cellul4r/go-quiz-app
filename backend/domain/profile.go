@@ -15,4 +15,5 @@ type Profile struct {
 	CreatedAt time.Time      `json:"created_at" gorm:"autoCreateTime;default:now()"`
 	UpdatedAt time.Time      `json:"updated_at" gorm:"autoUpdateTime;default:now()"`
 	DeletedAt gorm.DeletedAt `json:"deleted_at" gorm:"index"`
+	Quizzes   []Quiz         `json:"quizzes,omitempty" gorm:"foreignKey:AuthorID"`
 }
