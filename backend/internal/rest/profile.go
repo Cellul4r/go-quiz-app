@@ -110,9 +110,3 @@ func (h *ProfileHandler) UpdateMe(c fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(dto.ToProfileResponse(&updatedProfile))
 }
-
-// helpers
-func getProfileID(c fiber.Ctx) uuid.UUID {
-	user := c.Locals("user").(*domain.User)
-	return user.ID
-}

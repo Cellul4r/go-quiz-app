@@ -28,6 +28,8 @@ func getStatusCode(err error) int {
 			return http.StatusConflict
 		case "unauthorized":
 			return http.StatusUnauthorized
+		case "forbidden":
+			return http.StatusForbidden
 		case "bad_request", "validation_failed":
 			return http.StatusBadRequest
 		default:
@@ -44,6 +46,8 @@ func getStatusCode(err error) int {
 		return http.StatusConflict
 	case domain.ErrUnauthorized:
 		return http.StatusUnauthorized
+	case domain.ErrForbidden:
+		return http.StatusForbidden
 	case domain.ErrBadParamInput, domain.ErrUserNameConflict:
 		return http.StatusBadRequest
 	default:
