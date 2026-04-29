@@ -43,5 +43,6 @@ var (
 	// ErrBadParamInput will throw if the given request-body or params is not valid
 	ErrBadParamInput    = &AppError{Code: "bad_request", Message: "invalid request input"}
 	ErrUnauthorized     = &AppError{Code: "unauthorized", Message: "you are not authorized to perform this action"}
+	ErrForbidden        = &AppError{Code: "forbidden", Message: "you don't have permission to access this resource"}
 	ErrUserNameConflict = &AppError{Code: "username_conflict", Message: "username already exists"}
 )

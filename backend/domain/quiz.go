@@ -19,13 +19,18 @@ const (
 
 type Quiz struct {
 	ID               uuid.UUID        `json:"id" gorm:"type:uuid;primaryKey"`
-	AuthorID         uuid.UUID        `json:"author_id" gorm:"type:uuid;not null"`
+	ProfileID        uuid.UUID        `json:"profile_id" gorm:"type:uuid;not null"`
 	Title            string           `json:"title" gorm:"not null"`
 	Description      string           `json:"description"`
 	VisibilityStatus VisibilityStatus `json:"visibility_status" gorm:"not null;default:'private'"`
 	CreatedAt        time.Time        `json:"created_at" gorm:"autoCreateTime;default:now()"`
 	UpdatedAt        time.Time        `json:"updated_at" gorm:"autoUpdateTime;default:now()"`
 	DeletedAt        gorm.DeletedAt   `json:"deleted_at" gorm:"index"`
+}
+
+type QuizFilter struct {
+	ProfileID  *uuid.UUID
+	OnlyPublic bool
 }
 
 func (v *VisibilityStatus) Scan(value any) error {
