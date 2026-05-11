@@ -30,7 +30,7 @@ func NewQuizHandler(api fiber.Router, cfg *config.Config, svc QuizService) {
 
 	groupQuiz := api.Group("/quizzes")
 	// Public
-	groupQuiz.Get("", handler.GetAll)
+	groupQuiz.Get("", handler.GetAllPublic)
 
 	// Protected
 	protected := groupQuiz.Group("/me", middleware.Protected(cfg))
@@ -62,7 +62,7 @@ func (h *QuizHandler) GetMyQuiz(c fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.ToQuizResponse(&quiz))
 }
 
-func (h *QuizHandler) GetAll(c fiber.Ctx) error {
+func (h *QuizHandler) GetAllPublic(c fiber.Ctx) error {
 	ctx := c.Context()
 
 	quizzes, err := h.Service.GetAll(ctx, nil, true)
@@ -77,15 +77,15 @@ func (h *QuizHandler) GetMyQuizzes(c fiber.Ctx) error {
 	ctx := c.Context()
 	profileID := getProfileID(c)
 
-	onlyPublic := false
-	err := c.Bind().Query(&onlyPublic)
+	quizQuery := new(dto.QuizQueryFilter)
+	err := c.Bind().Query(quizQuery)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(ResponseError{
 			Code:    domain.ErrBadParamInput.Code,
 			Message: "invalid query parameter for only_public",
 		})
 	}
-	quizzes, err := h.Service.GetAll(ctx, &profileID, onlyPublic)
+	quizzes, err := h.Service.GetAll(ctx, &profileID, quizQuery.OnlyPublic)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(toResponseError(err))
 	}

@@ -29,6 +29,10 @@ type QuizResponse struct {
 	UpdatedAt        time.Time `json:"updated_at"`
 }
 
+type QuizQueryFilter struct {
+	OnlyPublic bool `query:"only_public"`
+}
+
 func (r *QuizCreateRequest) ToDomain() *domain.Quiz {
 	return &domain.Quiz{
 		Title:            r.Title,
@@ -67,7 +71,7 @@ func ToQuizResponse(q *domain.Quiz) *QuizResponse {
 }
 
 func ToQuizResponseList(quizzes *[]domain.Quiz) *[]QuizResponse {
-	responses := make([]QuizResponse, len(*quizzes))
+	responses := make([]QuizResponse, 0, len(*quizzes))
 	for _, quiz := range *quizzes {
 		responses = append(responses, *ToQuizResponse(&quiz))
 	}
