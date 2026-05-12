@@ -38,7 +38,7 @@ func (s *Service) GetByID(ctx context.Context, requestID uuid.UUID, quizID uuid.
 	}
 
 	if quiz.VisibilityStatus == domain.VisibilityPrivate &&
-		quiz.ProfileID != requestID {
+		quiz.AuthorID != requestID {
 		s.logger.Warn("quiz service get by id unauthorized access", "request_id", requestID.String(), "quiz_id", quizID.String())
 		return domain.Quiz{}, domain.ErrForbidden
 	}
@@ -53,7 +53,7 @@ func (s *Service) GetAll(ctx context.Context, requesterID *uuid.UUID, onlyPublic
 	}
 
 	filter := domain.QuizFilter{
-		ProfileID:  requesterID,
+		AuthorID:   requesterID,
 		OnlyPublic: onlyPublic,
 	}
 
@@ -69,7 +69,7 @@ func (s *Service) GetAll(ctx context.Context, requesterID *uuid.UUID, onlyPublic
 func (s *Service) Create(ctx context.Context, requesterID uuid.UUID, quiz *domain.Quiz) (domain.Quiz, error) {
 
 	quiz.ID = uuid.New()
-	quiz.ProfileID = requesterID
+	quiz.AuthorID = requesterID
 
 	created, err := s.quizRepo.Create(ctx, quiz)
 	if err != nil {
@@ -87,12 +87,12 @@ func (s *Service) UpdateByID(ctx context.Context, requesterID uuid.UUID, quiz *d
 		return domain.Quiz{}, err
 	}
 
-	if existing.ProfileID != requesterID {
+	if existing.AuthorID != requesterID {
 		s.logger.Warn("quiz service update unauthorized access", "request_id", requesterID.String(), "quiz_id", quiz.ID.String())
 		return domain.Quiz{}, domain.ErrForbidden
 	}
 
-	quiz.ProfileID = requesterID
+	quiz.AuthorID = requesterID
 	updatedQuiz, err := s.quizRepo.UpdateByID(ctx, quiz)
 	if err != nil {
 		s.logger.Error("quiz service update failed", "request_id", requesterID.String(), "quiz_id", quiz.ID.String(), "error", err)
@@ -109,7 +109,7 @@ func (s *Service) DeleteByID(ctx context.Context, requesterID uuid.UUID, quizID 
 		return err
 	}
 
-	if existing.ProfileID != requesterID {
+	if existing.AuthorID != requesterID {
 		s.logger.Warn("quiz service delete unauthorized access", "request_id", requesterID.String(), "quiz_id", quizID.String())
 		return domain.ErrForbidden
 	}

@@ -22,7 +22,7 @@ func TestGetByID(t *testing.T) {
 		quizRepo.On("GetByID", mock.Anything, quizID).
 			Return(domain.Quiz{
 				ID:               quizID,
-				ProfileID:        uuid.New(),
+				AuthorID:         uuid.New(),
 				Title:            "Test Quiz",
 				Description:      "A quiz for testing",
 				VisibilityStatus: domain.VisibilityPublic,
@@ -43,11 +43,11 @@ func TestGetByID(t *testing.T) {
 
 		requesterID := uuid.New()
 		quizID := uuid.New()
-		profileID := uuid.New()
+		AuthorID := uuid.New()
 		quizRepo.On("GetByID", mock.Anything, quizID).
 			Return(domain.Quiz{
 				ID:               quizID,
-				ProfileID:        profileID,
+				AuthorID:         AuthorID,
 				Title:            "Test Quiz",
 				Description:      "A quiz for testing",
 				VisibilityStatus: domain.VisibilityPrivate,
