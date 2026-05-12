@@ -130,14 +130,14 @@ func TestGetAllPublic(t *testing.T) {
 	quizzes := []domain.Quiz{
 		{
 			ID:               uuid.New(),
-			ProfileID:        uuid.New(),
+			AuthorID:         uuid.New(),
 			Title:            "Public Quiz 1",
 			Description:      "This is the first public quiz",
 			VisibilityStatus: domain.VisibilityPublic,
 		},
 		{
 			ID:               uuid.New(),
-			ProfileID:        uuid.New(),
+			AuthorID:         uuid.New(),
 			Title:            "Public Quiz 2",
 			Description:      "This is the second public quiz",
 			VisibilityStatus: domain.VisibilityPublic,
@@ -187,7 +187,7 @@ func TestGetAllPublic(t *testing.T) {
 
 				for i, quiz := range tc.expectedQuizzes {
 					assert.Equal(t, quiz.ID.String(), body[i]["id"])
-					assert.Equal(t, quiz.ProfileID.String(), body[i]["profile_id"])
+					assert.Equal(t, quiz.AuthorID.String(), body[i]["author_id"])
 					assert.Equal(t, quiz.Title, body[i]["title"])
 					assert.Equal(t, quiz.Description, body[i]["description"])
 					assert.Equal(t, string(quiz.VisibilityStatus), body[i]["visibility_status"])
@@ -204,14 +204,14 @@ func TestGetMyQuizzes(t *testing.T) {
 	quizzes := []domain.Quiz{
 		{
 			ID:               uuid.New(),
-			ProfileID:        uuid.New(),
+			AuthorID:         uuid.New(),
 			Title:            "My Quiz 1",
 			Description:      "This is the first quiz",
 			VisibilityStatus: domain.VisibilityPrivate,
 		},
 		{
 			ID:               uuid.New(),
-			ProfileID:        uuid.New(),
+			AuthorID:         uuid.New(),
 			Title:            "My Quiz 2",
 			Description:      "This is the second quiz",
 			VisibilityStatus: domain.VisibilityPublic,
@@ -277,7 +277,7 @@ func TestGetMyQuizzes(t *testing.T) {
 
 				for i, quiz := range tc.expectedQuizzes {
 					assert.Equal(t, quiz.ID.String(), body[i]["id"])
-					assert.Equal(t, quiz.ProfileID.String(), body[i]["profile_id"])
+					assert.Equal(t, quiz.AuthorID.String(), body[i]["author_id"])
 					assert.Equal(t, quiz.Title, body[i]["title"])
 					assert.Equal(t, quiz.Description, body[i]["description"])
 					assert.Equal(t, string(quiz.VisibilityStatus), body[i]["visibility_status"])
@@ -324,6 +324,7 @@ func TestCreateMyQuiz(t *testing.T) {
 		assert.Equal(t, "New Quiz", body["title"])
 		assert.Equal(t, "This is a new quiz", body["description"])
 		assert.Equal(t, string(domain.VisibilityPrivate), body["visibility_status"])
+		assert.Equal(t, "author_id", body["author_id"])
 
 		svc.AssertExpectations(t)
 	})

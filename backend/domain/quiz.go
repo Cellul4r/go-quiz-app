@@ -19,7 +19,7 @@ const (
 
 type Quiz struct {
 	ID               uuid.UUID        `json:"id" gorm:"type:uuid;primaryKey"`
-	ProfileID        uuid.UUID        `json:"profile_id" gorm:"type:uuid;not null"`
+	AuthorID         uuid.UUID        `json:"author_id" gorm:"type:uuid;not null"`
 	Title            string           `json:"title" gorm:"not null"`
 	Description      string           `json:"description"`
 	VisibilityStatus VisibilityStatus `json:"visibility_status" gorm:"not null;default:'private'"`
@@ -29,7 +29,7 @@ type Quiz struct {
 }
 
 type QuizFilter struct {
-	ProfileID  *uuid.UUID
+	AuthorID   *uuid.UUID
 	OnlyPublic bool
 }
 

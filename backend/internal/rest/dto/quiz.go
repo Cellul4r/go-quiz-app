@@ -21,7 +21,7 @@ type QuizUpdateRequest struct {
 
 type QuizResponse struct {
 	ID               uuid.UUID `json:"id"`
-	ProfileID        uuid.UUID `json:"profile_id"`
+	AuthorID         uuid.UUID `json:"author_id"`
 	Title            string    `json:"title"`
 	Description      string    `json:"description"`
 	VisibilityStatus string    `json:"visibility_status"`
@@ -61,7 +61,7 @@ func (r *QuizUpdateRequest) ToDomain(quizID uuid.UUID) *domain.Quiz {
 func ToQuizResponse(q *domain.Quiz) *QuizResponse {
 	return &QuizResponse{
 		ID:               q.ID,
-		ProfileID:        q.ProfileID,
+		AuthorID:         q.AuthorID,
 		Title:            q.Title,
 		Description:      q.Description,
 		VisibilityStatus: string(q.VisibilityStatus),
