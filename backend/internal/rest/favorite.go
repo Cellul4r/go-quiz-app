@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 
+	"github.com/Cellul4r/go-quiz-app/backend/domain"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest/dto"
 	"github.com/Cellul4r/go-quiz-app/backend/internal/rest/middleware"
@@ -12,7 +13,7 @@ import (
 )
 
 type FavoriteService interface {
-	GetFavoritesByProfileID(ctx context.Context, requesterID uuid.UUID, profileID uuid.UUID) ([]string, error)
+	GetFavoritesByProfileID(ctx context.Context, requesterID uuid.UUID, profileID uuid.UUID) ([]domain.Quiz, error)
 	AddFavorite(ctx context.Context, requesterID, profileID, quizID uuid.UUID) error
 	RemoveFavorite(ctx context.Context, requesterID, profileID, quizID uuid.UUID) error
 }
