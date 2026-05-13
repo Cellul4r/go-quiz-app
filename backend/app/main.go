@@ -56,6 +56,7 @@ func main() {
 
 	// Register modules
 	modules.RegisterProfileModule(db, appLogger, api, config)
+	modules.RegisterQuizModule(db, appLogger, api, config)
 
 	fiberlog.Info("Server is running on port " + config.Port)
 	port := config.Port
