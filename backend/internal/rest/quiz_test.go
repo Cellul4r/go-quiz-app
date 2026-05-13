@@ -19,6 +19,8 @@ import (
 
 const baseQuizURL = "/api/v1/quizzes"
 
+var testRequesterID = uuid.New()
+
 func setupQuizHandler(svc rest.QuizService) *fiber.App {
 	app := fiber.New(fiber.Config{
 		StructValidator: domain.NewStructValidator(),
@@ -35,7 +37,7 @@ func setupQuizHandler(svc rest.QuizService) *fiber.App {
 
 	// Protected
 	protected := api.Group("/me", func(c fiber.Ctx) error {
-		c.Locals("user", &domain.User{ID: uuid.New()})
+		c.Locals("user", &domain.User{ID: testRequesterID})
 		return c.Next()
 	})
 	protected.Get("", handler.GetMyQuizzes)
@@ -295,9 +297,10 @@ func TestCreateMyQuiz(t *testing.T) {
 		app := setupQuizHandler(svc)
 
 		quizID := uuid.New()
-		svc.On("Create", mock.Anything, mock.AnythingOfType("uuid.UUID"), mock.AnythingOfType("*domain.Quiz")).
+		svc.On("Create", mock.Anything, testRequesterID, mock.AnythingOfType("*domain.Quiz")).
 			Return(domain.Quiz{
 				ID:               quizID,
+				AuthorID:         testRequesterID,
 				Title:            "New Quiz",
 				Description:      "This is a new quiz",
 				VisibilityStatus: domain.VisibilityPrivate,
@@ -324,7 +327,7 @@ func TestCreateMyQuiz(t *testing.T) {
 		assert.Equal(t, "New Quiz", body["title"])
 		assert.Equal(t, "This is a new quiz", body["description"])
 		assert.Equal(t, string(domain.VisibilityPrivate), body["visibility_status"])
-		assert.Equal(t, "author_id", body["author_id"])
+		assert.Equal(t, testRequesterID.String(), body["author_id"])
 
 		svc.AssertExpectations(t)
 	})
