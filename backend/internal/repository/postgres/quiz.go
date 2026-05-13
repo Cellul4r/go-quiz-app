@@ -44,8 +44,8 @@ func (m *QuizRepository) GetAll(ctx context.Context, filter domain.QuizFilter) (
 		query = query.Where("visibility_status = ?", domain.VisibilityPublic)
 	}
 
-	if filter.ProfileID != nil {
-		query = query.Where("profile_id = ?", *filter.ProfileID)
+	if filter.AuthorID != nil {
+		query = query.Where("author_id = ?", *filter.AuthorID)
 	}
 
 	var quizzes []domain.Quiz
