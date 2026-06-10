@@ -14,7 +14,7 @@ This repository contains a Go quiz API with Supabase-backed persistence. The Go 
 - `backend/internal/repository/postgres/`: Postgres repositories and integration tests.
 - `backend/{quiz,profile,favorite}/`: feature services and generated mocks.
 - `supabase/migrations/`: SQL migrations and local Supabase config.
-- `swagger_doc/`: generated Swagger artifacts.
+- `backend/swagger_doc/`: generated Swagger artifacts.
 - `docs/images/`: project diagrams and documentation assets.
 
 ## Build, Test, and Development Commands
