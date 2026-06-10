@@ -1,6 +1,23 @@
 basePath: /api/v1
 definitions:
-  dto.ProfileResponse:
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.FavoriteRequest:
+    properties:
+      profile_id:
+        type: string
+      quiz_id:
+        type: string
+    required:
+    - profile_id
+    - quiz_id
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.FavoritesResponse:
+    properties:
+      favorites:
+        items:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+        type: array
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.ProfileResponse:
     properties:
       avatar_url:
         type: string
@@ -15,7 +32,7 @@ definitions:
       username:
         type: string
     type: object
-  dto.ProfileUpdateRequest:
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.ProfileUpdateRequest:
     properties:
       avatar_url:
         type: string
@@ -27,7 +44,125 @@ definitions:
         minLength: 1
         type: string
     type: object
-  rest.ResponseError:
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionCreateRequest:
+    properties:
+      content:
+        type: string
+      image_url:
+        type: string
+      options:
+        type: object
+      question_type:
+        enum:
+        - multiple_choice
+        - true_false
+        - typed_answer
+        type: string
+      sort_order:
+        minimum: 0
+        type: integer
+      time_limit_seconds:
+        minimum: 0
+        type: integer
+    required:
+    - content
+    - options
+    - question_type
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse:
+    properties:
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      options: {}
+      question_type:
+        type: string
+      quiz_id:
+        type: string
+      sort_order:
+        type: integer
+      time_limit_seconds:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionUpdateRequest:
+    properties:
+      content:
+        type: string
+      image_url:
+        type: string
+      options:
+        type: object
+      question_type:
+        enum:
+        - multiple_choice
+        - true_false
+        - typed_answer
+        type: string
+      sort_order:
+        minimum: 0
+        type: integer
+      time_limit_seconds:
+        minimum: 0
+        type: integer
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizCreateRequest:
+    properties:
+      description:
+        maxLength: 200
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+      visibility_status:
+        enum:
+        - public
+        - private
+        type: string
+    required:
+    - title
+    - visibility_status
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse:
+    properties:
+      author_id:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+      visibility_status:
+        type: string
+    type: object
+  github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizUpdateRequest:
+    properties:
+      description:
+        maxLength: 200
+        type: string
+      title:
+        maxLength: 100
+        minLength: 1
+        type: string
+      visibility_status:
+        enum:
+        - public
+        - private
+        type: string
+    type: object
+  internal_rest.ResponseError:
     properties:
       code:
         type: string
@@ -47,6 +182,107 @@ info:
   title: Go Quiz App API
   version: "1.0"
 paths:
+  /favorites:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a quiz from the authenticated user's favorites.
+      parameters:
+      - description: Favorite request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.FavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Remove favorite
+      tags:
+      - favorites
+    get:
+      description: List the quizzes saved by the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.FavoritesResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my favorites
+      tags:
+      - favorites
+    post:
+      consumes:
+      - application/json
+      description: Save a quiz to the authenticated user's favorites.
+      parameters:
+      - description: Favorite request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.FavoriteRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Add favorite
+      tags:
+      - favorites
   /profiles/{id}:
     get:
       consumes:
@@ -64,24 +300,24 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.ProfileResponse'
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.ProfileResponse'
         "400":
           description: Invalid profile ID
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
         "404":
           description: Profile not found
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
       summary: Get profile by ID
       tags:
       - profiles
   /profiles/me:
-    put:
+    patch:
       consumes:
       - application/json
       description: Update the current user's profile information (requires authentication)
@@ -91,31 +327,538 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/dto.ProfileUpdateRequest'
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.ProfileUpdateRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dto.ProfileResponse'
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.ProfileResponse'
         "400":
           description: Invalid request or validation error
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
         "500":
           description: Internal server error
           schema:
-            $ref: '#/definitions/rest.ResponseError'
+            $ref: '#/definitions/internal_rest.ResponseError'
       security:
       - BearerAuth: []
       summary: Update my profile
       tags:
       - profiles
+  /questions/{id}:
+    get:
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      summary: Get public question by ID
+      tags:
+      - questions
+  /questions/me/{id}:
+    delete:
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Delete my question
+      tags:
+      - questions
+    get:
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my question by ID
+      tags:
+      - questions
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Question ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Question update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Update my question
+      tags:
+      - questions
+  /quizzes:
+    get:
+      description: List quizzes that are visible to everyone.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      summary: Get public quizzes
+      tags:
+      - quizzes
+  /quizzes/{quiz_id}/questions:
+    get:
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      summary: Get public quiz questions
+      tags:
+      - questions
+  /quizzes/me:
+    get:
+      description: List the authenticated user's quizzes. Use only_public=true to
+        return only public quizzes.
+      parameters:
+      - description: Only public quizzes
+        in: query
+        name: only_public
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my quizzes
+      tags:
+      - quizzes
+    post:
+      consumes:
+      - application/json
+      description: Create a new quiz owned by the authenticated user.
+      parameters:
+      - description: Quiz create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Create my quiz
+      tags:
+      - quizzes
+  /quizzes/me/{id}:
+    delete:
+      description: Delete a quiz owned by the authenticated user.
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Delete my quiz
+      tags:
+      - quizzes
+    get:
+      description: Get a quiz owned by the authenticated user.
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my quiz by ID
+      tags:
+      - quizzes
+    patch:
+      consumes:
+      - application/json
+      description: Update an existing quiz owned by the authenticated user.
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Quiz update request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuizResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Update my quiz
+      tags:
+      - quizzes
+  /quizzes/me/{quiz_id}/questions:
+    get:
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Get my quiz questions
+      tags:
+      - questions
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Quiz ID
+        in: path
+        name: quiz_id
+        required: true
+        type: string
+      - description: Question create request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionCreateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/github_com_Cellul4r_go-quiz-app_backend_internal_rest_dto.QuestionResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_rest.ResponseError'
+      security:
+      - BearerAuth: []
+      summary: Create my quiz question
+      tags:
+      - questions
 securityDefinitions:
   BearerAuth:
     description: 'Enter JWT token with Bearer prefix. Example: Bearer {token}'

@@ -41,6 +41,20 @@ func NewQuizHandler(api fiber.Router, cfg *config.Config, svc QuizService) {
 	protected.Delete("/:id", handler.DeleteMyQuiz)
 }
 
+// GetMyQuiz returns a quiz owned by the authenticated user.
+// @Summary Get my quiz by ID
+// @Description Get a quiz owned by the authenticated user.
+// @Tags quizzes
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Quiz ID"
+// @Success 200 {object} dto.QuizResponse
+// @Failure 400 {object} ResponseError
+// @Failure 401 {object} ResponseError
+// @Failure 403 {object} ResponseError
+// @Failure 404 {object} ResponseError
+// @Failure 500 {object} ResponseError
+// @Router /quizzes/me/{id} [get]
 func (h *QuizHandler) GetMyQuiz(c fiber.Ctx) error {
 	quizID, err := uuid.Parse(c.Params("id"))
 
@@ -62,6 +76,14 @@ func (h *QuizHandler) GetMyQuiz(c fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.ToQuizResponse(&quiz))
 }
 
+// GetAllPublic returns public quizzes.
+// @Summary Get public quizzes
+// @Description List quizzes that are visible to everyone.
+// @Tags quizzes
+// @Produce json
+// @Success 200 {array} dto.QuizResponse
+// @Failure 500 {object} ResponseError
+// @Router /quizzes [get]
 func (h *QuizHandler) GetAllPublic(c fiber.Ctx) error {
 	ctx := c.Context()
 
@@ -73,6 +95,19 @@ func (h *QuizHandler) GetAllPublic(c fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.ToQuizResponseList(&quizzes))
 }
 
+// GetMyQuizzes returns quizzes for the authenticated user.
+// @Summary Get my quizzes
+// @Description List the authenticated user's quizzes. Use only_public=true to return only public quizzes.
+// @Tags quizzes
+// @Produce json
+// @Security BearerAuth
+// @Param only_public query bool false "Only public quizzes"
+// @Success 200 {array} dto.QuizResponse
+// @Failure 400 {object} ResponseError
+// @Failure 401 {object} ResponseError
+// @Failure 403 {object} ResponseError
+// @Failure 500 {object} ResponseError
+// @Router /quizzes/me [get]
 func (h *QuizHandler) GetMyQuizzes(c fiber.Ctx) error {
 	ctx := c.Context()
 	profileID := getProfileID(c)
@@ -93,6 +128,20 @@ func (h *QuizHandler) GetMyQuizzes(c fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.ToQuizResponseList(&quizzes))
 }
 
+// CreateMyQuiz creates a quiz for the authenticated user.
+// @Summary Create my quiz
+// @Description Create a new quiz owned by the authenticated user.
+// @Tags quizzes
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body dto.QuizCreateRequest true "Quiz create request"
+// @Success 201 {object} dto.QuizResponse
+// @Failure 400 {object} ResponseError
+// @Failure 401 {object} ResponseError
+// @Failure 403 {object} ResponseError
+// @Failure 500 {object} ResponseError
+// @Router /quizzes/me [post]
 func (h *QuizHandler) CreateMyQuiz(c fiber.Ctx) error {
 	ctx := c.Context()
 	profileID := getProfileID(c)
@@ -120,6 +169,22 @@ func (h *QuizHandler) CreateMyQuiz(c fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(dto.ToQuizResponse(&createdQuiz))
 }
 
+// UpdateMyQuiz updates a quiz owned by the authenticated user.
+// @Summary Update my quiz
+// @Description Update an existing quiz owned by the authenticated user.
+// @Tags quizzes
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Quiz ID"
+// @Param request body dto.QuizUpdateRequest true "Quiz update request"
+// @Success 200 {object} dto.QuizResponse
+// @Failure 400 {object} ResponseError
+// @Failure 401 {object} ResponseError
+// @Failure 403 {object} ResponseError
+// @Failure 404 {object} ResponseError
+// @Failure 500 {object} ResponseError
+// @Router /quizzes/me/{id} [patch]
 func (h *QuizHandler) UpdateMyQuiz(c fiber.Ctx) error {
 	ctx := c.Context()
 	profileID := getProfileID(c)
@@ -155,6 +220,20 @@ func (h *QuizHandler) UpdateMyQuiz(c fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(dto.ToQuizResponse(&updatedQuiz))
 }
 
+// DeleteMyQuiz deletes a quiz owned by the authenticated user.
+// @Summary Delete my quiz
+// @Description Delete a quiz owned by the authenticated user.
+// @Tags quizzes
+// @Produce json
+// @Security BearerAuth
+// @Param id path string true "Quiz ID"
+// @Success 204
+// @Failure 400 {object} ResponseError
+// @Failure 401 {object} ResponseError
+// @Failure 403 {object} ResponseError
+// @Failure 404 {object} ResponseError
+// @Failure 500 {object} ResponseError
+// @Router /quizzes/me/{id} [delete]
 func (h *QuizHandler) DeleteMyQuiz(c fiber.Ctx) error {
 	ctx := c.Context()
 	profileID := getProfileID(c)
