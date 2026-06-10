@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 )
 
@@ -33,9 +34,12 @@ var envs = []string{
 func LoadConfig() (Config, error) {
 	var config Config
 
+	_ = godotenv.Load("../.env", ".env")
+
 	for _, env := range envs {
 		viper.BindEnv(env)
 	}
+	viper.AutomaticEnv()
 
 	if err := viper.Unmarshal(&config); err != nil {
 		return config, err

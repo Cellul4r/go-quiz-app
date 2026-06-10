@@ -16,6 +16,10 @@ type QuizRepository interface {
 	DeleteByID(ctx context.Context, quizID uuid.UUID) error
 }
 
+type QuestionRepository interface {
+	GetByID(ctx context.Context, questionID string) (*domain.Question, error)
+}
+
 type Service struct {
 	quizRepo QuizRepository
 	logger   *slog.Logger

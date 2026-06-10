@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/Cellul4r/go-quiz-app/backend/internal/config"
@@ -13,8 +14,7 @@ import (
 )
 
 func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Bangkok",
-		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+	dsn := buildDSN(cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 
 	var gormLogger logger.Interface
 	// only log in development
@@ -44,6 +44,21 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: gormLogger,
 	})
+	if err == nil {
+		return db, nil
+	}
+
+	if cfg.DBHost == "host.docker.internal" && strings.Contains(err.Error(), "lookup host.docker.internal") {
+		fallbackDSN := buildDSN("localhost", cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
+		return gorm.Open(postgres.Open(fallbackDSN), &gorm.Config{
+			Logger: gormLogger,
+		})
+	}
 
 	return db, err
+}
+
+func buildDSN(host, port, user, password, dbName string) string {
+	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Bangkok",
+		host, port, user, password, dbName)
 }
